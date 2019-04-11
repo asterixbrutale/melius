@@ -24,8 +24,10 @@ def set_language(bot,update):
 
 def main_menu(bot, update):
     chat_id = update.message.chat_id
+    global dict_1
+    lang=searchLangOfChatId(chat_id)
+    
     #Menu under insert text field
-    bot.sendMessage(chat_id = chat_id, text=text_main_menu_1_ita,reply_markup = main_menu_keyboard())
     if(lang=="italian"):
             bot.sendMessage(chat_id,text_main_menu_1_ita,reply_markup = main_menu_keyboard())
     if(lang=="english"):
@@ -70,6 +72,7 @@ def message_callback_handler(bot, update):
     chat_id = update.message.chat_id
     global dict_1
     lang=searchLangOfChatId(chat_id)
+    reply = update.message.reply_to_message
 
     if(lang!=None):
         dict_1=dict_0[lang]
@@ -88,7 +91,7 @@ def message_callback_handler(bot, update):
             bot.send_message(chat_id,link_youtube_sm4_eng)
             bot.send_message(chat_id,testo2_igotrade_eng)
             bot.send_message(chat_id,video_node)
-        bot.send_message(chat_id,dict_1["calculator_menu"][0],reply_markup=sub_menu_calculator_keyboard())
+        #bot.send_message(chat_id,dict_1["calculator_menu"][0],reply_markup=sub_menu_calculator_keyboard())
     
     if(message_text == dict_1["main_menu"][1]): #50k real
         if(lang=="italian"):
@@ -129,13 +132,36 @@ def message_callback_handler(bot, update):
             bot.send_message(chat_id,text_sub_menu_5_ita,reply_markup=sub_menu_keyboard("5"))
         if(lang=="english"):
             bot.send_message(chat_id,text_sub_menu_5_eng,reply_markup=sub_menu_keyboard("5"))
-
+    
     if(message_text == dict_1["go_back"]):
         main_menu(bot,update)
     
-    if(message_text == dict_1["calculator_menu"][0]):
+    if(message_text == dict_1["calculator_menu"][0]): #calcolatore
         bot.send_message(chat_id,dict_1["calculator_menu"][1],reply_markup=ForceReply(force_reply=True))
-
+        
+    if(reply!=None): #calcolatore
+        if(reply.text == dict_1["calculator_menu"][1]):
+            split_str = message_text.split(" ")
+            if(len(split_str) == 2):
+                if((split_str[0].isdigit()) & ((split_str[1] == dict_1["calculator_menu"][3]) | (split_str[1] == dict_1["calculator_menu"][4]) | (split_str[1] == dict_1["calculator_menu"][5]))):
+                    if(float(split_str[0])<500):
+                        bot.send_message(chat_id,dict_1["calculator_menu"][6])
+                        bot.send_message(chat_id,dict_1["calculator_menu"][1],reply_markup=ForceReply(force_reply=True))
+                    else:
+                        bot.send_message(chat_id,split_str[0]+" "+split_str[1])
+                        if (split_str[1] == dict_1["calculator_menu"][3]):
+                            risk = 0
+                        if (split_str[1] == dict_1["calculator_menu"][4]):
+                            risk = 1
+                        if (split_str[1] == dict_1["calculator_menu"][5]):
+                            risk = 2
+                        pip_value = calculator(float(split_str[0]),risk)
+                        bot.send_message(chat_id,dict_1["calculator_menu"][7]+": "+str(round(pip_value,2))+" euro")
+                        main_menu(bot,update)
+            else:
+                bot.send_message(chat_id,dict_1["calculator_menu"][2])
+                bot.send_message(chat_id,dict_1["calculator_menu"][1],reply_markup=ForceReply(force_reply=True))
+    
     if(message_text == dict_1["contact_menu"][0]):
         bot.send_message(chat_id,link_gruppo_telegram),
         bot.send_message(link_gruppo_telegram1)
@@ -154,7 +180,7 @@ def main_menu_keyboard():
                (dict_1["main_menu"][1])],
               [(dict_1["main_menu"][2]),
                (dict_1["main_menu"][3])],
-              [(dict_1["main_menu"][4])]]
+              [(dict_1["main_menu"][4]),(dict_1["calculator_menu"][0])]]
     main_menu_keyboard = ReplyKeyboardMarkup(main_menu_buttons, resize_keyboard = True)
     return main_menu_keyboard
 

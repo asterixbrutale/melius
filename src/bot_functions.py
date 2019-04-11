@@ -10,7 +10,8 @@ def calculator(budget, risk):
     #rischio alto
     if risk==2:
         new_budget = (0.01/150)*budget
-    
-    pip_value = new_budget*0.09*pip_number
-    return pip_value
 
+    new_budget *=100
+    #circa 0.09
+    pip_value = 0.09*new_budget*pip_number
+    return pip_value
