@@ -157,7 +157,7 @@ def message_callback_handler(bot, update):
                             risk = 2
                         pip_value = calculator(float(split_str[0]),risk)
                         bot.send_message(chat_id,dict_1["calculator_menu"][7]+": "+str(round(pip_value,2))+" euro")
-                        main_menu(bot,update)
+						bot.sendMessage(chat_id,"Main menu",reply_markup = main_menu_keyboard())
             else:
                 bot.send_message(chat_id,dict_1["calculator_menu"][2])
                 bot.send_message(chat_id,dict_1["calculator_menu"][1],reply_markup=ForceReply(force_reply=True))
